@@ -1,0 +1,20 @@
+sНастройка Flask-Babel переводов
+В терминале:
+
+pybabel init -i messages.pot -d app/translations -l ru
+pybabel init -i messages.pot -d app/translations -l en
+pybabel init -i messages.pot -d app/translations -l kz
+
+
+Потом будешь обновлять:
+
+pybabel extract -F babel.cfg -o messages.pot .
+pybabel update -i messages.pot -d app/translations
+pybabel compile -d app/translations
+
+
+ Активируй виртуальное окружение
+.venv\Scripts\activate
+
+ Установи зависимости
+pip install -r requirements.txt
