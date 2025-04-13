@@ -9,6 +9,8 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(50))  # admin, medic и т.д.
     default_language = db.Column(db.String(10))
     password = db.Column(db.Text)  # без хеширования
+    telegram_id = db.Column(db.String(100), unique=True)
+    telegram_username = db.Column(db.String(100), nullable=True)
 
     def __str__(self):
         return self.name
@@ -99,3 +101,12 @@ class Setting(db.Model):
 
     def __str__(self):
         return self.key
+
+class Club(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    description = db.Column(db.Text)
+    url = db.Column(db.Text)
+
+    def __str__(self):
+        return self.name

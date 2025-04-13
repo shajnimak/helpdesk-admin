@@ -18,9 +18,10 @@ class AdminOnlyView(ModelView):
 class UserAdminView(ModelView):
     column_exclude_list = ['password']  # не отображаем пароль
 
-    form_extra_fields = {
-        'password': PasswordField('Пароль (оставьте пустым, если не менять)')
-    }
+    # Отображаем только нужные поля
+    column_list = ('id', 'name', 'email', 'telegram_id', 'telegram_username')
+    column_searchable_list = ('name', 'email', 'telegram_username', 'telegram_id')
+    form_columns = ('name', 'email', 'telegram_id', 'telegram_username')
 
     def on_model_change(self, form, model, is_created):
         if form.password.data:
