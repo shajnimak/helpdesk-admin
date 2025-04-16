@@ -66,7 +66,7 @@ class Event(db.Model):
     description_ru = db.Column(db.Text)
     description_en = db.Column(db.Text)
     description_kk = db.Column(db.Text)
-    date = db.Column(db.Date, default=datetime.utcnow)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __str__(self):
         return self.title_ru
@@ -76,6 +76,7 @@ class MedicalRequest(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     reason = db.Column(db.Text)
     status = db.Column(db.String(50), default='Новая')
+    date = db.Column(db.DateTime, default=datetime.utcnow)  # новое поле
 
     user = db.relationship("User")
 
@@ -110,3 +111,11 @@ class Club(db.Model):
 
     def __str__(self):
         return self.name
+
+class TelegramToken(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    telegram_id = db.Column(db.String(100), unique=True, nullable=False)
+    token = db.Column(db.String(500), nullable=False)
+
+    def __str__(self):
+        return f"TelegramToken({self.telegram_id})"

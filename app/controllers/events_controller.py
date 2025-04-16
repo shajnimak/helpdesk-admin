@@ -15,7 +15,7 @@ def get_events():
             "description_ru": event.description_ru,
             "description_en": event.description_en,
             "description_kk": event.description_kk,
-            "date": event.date.strftime('%Y-%m-%d')
+            "date": event.date.strftime('%Y-%m-%d %H:%M')
         }
         for event in events
     ]

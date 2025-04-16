@@ -9,12 +9,13 @@ def create_medical_request():
     data = request.get_json()
     user_id = data.get('user_id')
     reason = data.get('reason')
+    date = data.get('date')
 
     user = User.query.get(user_id)
     if not user:
         return jsonify({"message": "User not found"}), 404
 
-    new_request = MedicalRequest(user_id=user_id, reason=reason)
+    new_request = MedicalRequest(user_id=user_id, reason=reason, date=date)
     db.session.add(new_request)
     db.session.commit()
 
@@ -31,7 +32,8 @@ def get_medical_requests_by_user(user_id):
         {
             "id": request.id,
             "reason": request.reason,
-            "status": request.status
+            "status": request.status,
+            "date": request.date.strftime('%Y-%m-%d %H:%M')
         }
         for request in requests
     ]

@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify
 from app.models import FAQ
 
-faq_bp = Blueprint('faq', __name__)
+faq_bp = Blueprint('faqs', __name__)
 
-@faq_bp.route('/api/faq', methods=['GET'])
+@faq_bp.route('/api/faqs', methods=['GET'])
 def get_faq():
     faq_items = FAQ.query.all()  # Получаем все FAQ из базы данных
     faq_list = [

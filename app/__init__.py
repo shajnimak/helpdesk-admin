@@ -40,22 +40,21 @@ def create_app():
     setup_admin_views(admin)
 
     from .models import User
-    from .telegram_oauth import oauth_bp
-    app.register_blueprint(oauth_bp)
-    from app.controllers.contacts_controller import contacts_bp
     from app.controllers.contacts_controller import contacts_bp
     from app.controllers.instructions_controller import instructions_bp
     from app.controllers.medical_requests_controller import medical_requests_bp
     from app.controllers.events_controller import events_bp
     from app.controllers.clubs_controller import clubs_bp
     from app.controllers.faq_controller import faq_bp
-    app.register_blueprint(contacts_bp)
+    from app.controllers.telegram_token_controller import telegram_token_bp
     app.register_blueprint(contacts_bp)
     app.register_blueprint(instructions_bp)
     app.register_blueprint(medical_requests_bp)
     app.register_blueprint(events_bp)
     app.register_blueprint(clubs_bp)
     app.register_blueprint(faq_bp)
+    app.register_blueprint(telegram_token_bp)
+
 
     @login_manager.user_loader
     def load_user(user_id):
