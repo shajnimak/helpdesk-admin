@@ -1,7 +1,4 @@
-from wtforms import PasswordField
-from wtforms.validators import Optional
 from flask_admin.contrib.sqla import ModelView
-from werkzeug.security import generate_password_hash
 from flask_login import current_user
 from .models import *
 from . import db
@@ -62,5 +59,6 @@ def setup_admin_views(admin):
     admin.add_view(AdminOnlyView(FAQ, db.session))
     admin.add_view(AdminOnlyView(Setting, db.session))
     admin.add_view(AdminOnlyView(SupportRequest, db.session))
+    admin.add_view(AdminOnlyView(Club, db.session))
     admin.add_view(EventManagerView(Event, db.session))
     admin.add_view(MedicView(MedicalRequest, db.session))

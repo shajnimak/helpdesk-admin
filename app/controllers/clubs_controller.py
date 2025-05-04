@@ -10,7 +10,8 @@ def get_clubs():
         {
             "id": club.id,
             "name": club.name,
-            "description": club.description
+            "description": club.description,
+            "url": club.url
         }
         for club in clubs
     ]
