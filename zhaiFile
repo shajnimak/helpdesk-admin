@@ -18,3 +18,9 @@ pybabel compile -d app/translations
 
  Установи зависимости
 pip install -r requirements.txt
+
+
+
+flask db init
+flask db migrate -m "Описание изменений"
+flask db upgrade

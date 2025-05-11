@@ -76,12 +76,17 @@ class MedicalRequest(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     reason = db.Column(db.Text)
     status = db.Column(db.String(50), default='Новая')
-    date = db.Column(db.DateTime, default=datetime.utcnow)  # новое поле
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    file_name = db.Column(db.String(255))
+    file_data = db.Column(db.LargeBinary)  # храним файл в бинарном виде
+    file_mime = db.Column(db.String(100))
 
     user = db.relationship("User")
 
     def __str__(self):
         return f"Request from {self.user.name}"
+
 
 class SupportRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)

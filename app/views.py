@@ -2,6 +2,8 @@ from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from .models import *
 from . import db
+from flask_admin.helpers import get_url
+from markupsafe import Markup
 
 
 class AdminOnlyView(ModelView):
@@ -44,6 +46,25 @@ class EventManagerView(ModelView):
 
 
 class MedicView(ModelView):
+    column_list = ('id', 'user', 'reason', 'status', 'date', 'file_download')
+
+    def _file_download(view, context, model, name):
+        if model.file_data:
+            url = f"/admin/medical_request/{model.id}/download"
+            return Markup(f'<a href="{url}" target="_blank">📎 Скачать</a>')
+        return '—'
+
+    column_formatters = {
+        'file_download': _file_download
+    }
+
+    column_labels = {
+        'file_download': 'Файл'
+    }
+
+    form_excluded_columns = ('file_data', 'user')  # исключаем user
+    form_columns = ('user_id', 'reason', 'status', 'date')  # только ID
+
     def is_accessible(self):
         return current_user.is_authenticated and current_user.role in ['medic', 'admin']
 

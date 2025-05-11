@@ -13,3 +13,4 @@ WTForms~=3.2.1
 alembic~=1.15.1
 SQLAlchemy~=2.0.39
 PyJWT
+MarkupSafe~=3.0.2
