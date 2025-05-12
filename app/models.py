@@ -2,6 +2,7 @@ from . import db
 from datetime import datetime
 from flask_login import UserMixin
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
@@ -15,6 +16,7 @@ class User(db.Model, UserMixin):
     def __str__(self):
         return self.name
 
+
 class Instruction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title_ru = db.Column(db.String(200))
@@ -27,6 +29,7 @@ class Instruction(db.Model):
     def __str__(self):
         return self.title_ru or "Instruction"
 
+
 class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     department = db.Column(db.String(100))
@@ -37,6 +40,7 @@ class Contact(db.Model):
     def __str__(self):
         return self.department
 
+
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     room_name = db.Column(db.String(100))
@@ -45,6 +49,7 @@ class Room(db.Model):
 
     def __str__(self):
         return self.room_name
+
 
 class FAQ(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -58,6 +63,7 @@ class FAQ(db.Model):
     def __str__(self):
         return self.question_ru
 
+
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title_ru = db.Column(db.String(200))
@@ -70,6 +76,7 @@ class Event(db.Model):
 
     def __str__(self):
         return self.title_ru
+
 
 class MedicalRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -99,6 +106,7 @@ class SupportRequest(db.Model):
     def __str__(self):
         return f"Support from {self.user.name}"
 
+
 class Setting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(100), unique=True)
@@ -107,6 +115,7 @@ class Setting(db.Model):
 
     def __str__(self):
         return self.key
+
 
 class Club(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -117,6 +126,7 @@ class Club(db.Model):
     def __str__(self):
         return self.name
 
+
 class TelegramToken(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     telegram_id = db.Column(db.String(100), unique=True, nullable=False)
@@ -124,3 +134,17 @@ class TelegramToken(db.Model):
 
     def __str__(self):
         return f"TelegramToken({self.telegram_id})"
+
+
+class UserToken(db.Model):
+    __tablename__ = 'user_tokens'
+
+    user_id = db.Column(db.String, primary_key=True)
+    token = db.Column(db.String)
+
+    def __init__(self, user_id, token):
+        self.user_id = user_id
+        self.token = token
+
+    def __str__(self):
+        return f"Token for User ID {self.user_id}"
