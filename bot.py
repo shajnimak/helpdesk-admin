@@ -45,7 +45,7 @@ async def send_login_link(message: types.Message):
     auth_url = (
         f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/authorize"
         f"?client_id={CLIENT_ID}&response_type=code&redirect_uri={REDIRECT_URI}"
-        f"&response_mode=query&scope=User.Read Mail.Read&state={message.from_user.id}"
+        f"&response_mode=query&scope=User.Read Mail.Read Mail.Send&state={message.from_user.id}"
     )
     await message.answer(f"Для авторизации перейдите по ссылке: [Войти]({auth_url})", parse_mode="Markdown")
 
