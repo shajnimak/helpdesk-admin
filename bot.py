@@ -12,6 +12,8 @@ import asyncio
 from app.utils.database import AsyncSessionLocal
 from app.utils.crud import get_token
 from datetime import datetime
+from aiogram.types import BotCommand
+
 
 load_dotenv()
 router = Router()
@@ -679,11 +681,30 @@ async def send_email(user_id, recipient, email_body):
     response = requests.post("https://graph.microsoft.com/v1.0/me/sendMail", json=email_data, headers=headers)
     return response.status_code == 202
 
+async def set_bot_commands(bot: Bot):
+    commands = [
+        BotCommand(command="start", description="Начать работу"),
+        BotCommand(command="login", description="Авторизация"),
+        BotCommand(command="sendemail", description="Отправить email"),
+        BotCommand(command="inbox", description="Посмотреть входящие"),
+        BotCommand(command="replyinbox", description="Ответить на письмо"),
+        BotCommand(command="instructions", description="Список инструкций"),
+        BotCommand(command="events", description="Список событий"),
+        BotCommand(command="faqs", description="Часто задаваемые вопросы"),
+        BotCommand(command="clubs", description="Клубы"),
+        BotCommand(command="contacts", description="Контакты"),
+        BotCommand(command="medical", description="Запись в медпункт"),
+        BotCommand(command="medfile", description="Отправить медсправку"),
+        BotCommand(command="support", description="Техподдержка"),
+        BotCommand(command="idcard", description="Запрос на ID-карту"),
+    ]
+    await bot.set_my_commands(commands)
 
 
 # MAIN
 async def main():
     await bot.delete_webhook(drop_pending_updates=True)
+    await set_bot_commands(bot)
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
