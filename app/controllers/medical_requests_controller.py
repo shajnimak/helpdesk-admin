@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.models import MedicalRequest, User, db
+from app.utils.telegram_notify import send_telegram_message
 
 medical_requests_bp = Blueprint('medical_requests', __name__)
 
@@ -7,13 +8,12 @@ medical_requests_bp = Blueprint('medical_requests', __name__)
 @medical_requests_bp.route('/api/medical_requests', methods=['POST'])
 def create_medical_request():
     data = request.get_json()
-    user_id = data.get('user_id')
+    user_id = data.get('user_id')  # это Telegram ID
     reason = data.get('reason')
     date = data.get('date')
 
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({"message": "User not found"}), 404
+    if not user_id or not reason or not date:
+        return jsonify({"message": "Missing required fields"}), 400
 
     new_request = MedicalRequest(user_id=user_id, reason=reason, date=date)
     db.session.add(new_request)
@@ -22,9 +22,9 @@ def create_medical_request():
     return jsonify({"message": "Medical request created successfully", "id": new_request.id}), 201
 
 
-@medical_requests_bp.route('/api/medical_requests/<int:user_id>', methods=['GET'])
+@medical_requests_bp.route('/api/medical_requests/<user_id>', methods=['GET'])
 def get_medical_requests_by_user(user_id):
-    requests = MedicalRequest.query.filter_by(user_id=user_id).all()
+    requests = MedicalRequest.query.filter_by(user_id=str(user_id)).all()
     if not requests:
         return jsonify({"message": "No requests found for this user"}), 404
 
@@ -88,3 +88,22 @@ def download_file_from_admin(request_id):
         as_attachment=True,
         download_name=req.file_name or 'file.bin'
     )
+
+@medical_requests_bp.route('/api/medical_requests/<int:request_id>/status', methods=['PUT'])
+def update_request_status(request_id):
+    data = request.get_json()
+    new_status = data.get('status')
+
+    medical_request = MedicalRequest.query.get(request_id)
+    if not medical_request:
+        return jsonify({"message": "Request not found"}), 404
+
+    old_status = medical_request.status
+    medical_request.status = new_status
+    db.session.commit()
+
+    # Уведомление в Telegram
+    message = f"📢 Статус вашей заявки в медпункт обновлён:\n<b>{new_status}</b>"
+    send_telegram_message(medical_request.user_id, message)
+
+    return jsonify({"message": "Status updated", "old_status": old_status, "new_status": new_status})

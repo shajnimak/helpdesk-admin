@@ -80,19 +80,17 @@ class Event(db.Model):
 
 class MedicalRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.String(100))  # <- теперь это просто строка/число, а не ForeignKey
     reason = db.Column(db.Text)
     status = db.Column(db.String(50), default='Новая')
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
     file_name = db.Column(db.String(255))
-    file_data = db.Column(db.LargeBinary)  # храним файл в бинарном виде
+    file_data = db.Column(db.LargeBinary)
     file_mime = db.Column(db.String(100))
 
-    user = db.relationship("User")
-
     def __str__(self):
-        return f"Request from {self.user.name}"
+        return f"Request from Telegram ID {self.user_id}"
 
 
 class SupportRequest(db.Model):
@@ -136,15 +134,19 @@ class TelegramToken(db.Model):
         return f"TelegramToken({self.telegram_id})"
 
 
+from datetime import datetime
+
 class UserToken(db.Model):
     __tablename__ = 'user_tokens'
 
     user_id = db.Column(db.String, primary_key=True)
     token = db.Column(db.String)
+    expires_at = db.Column(db.DateTime)  # Новое поле
 
-    def __init__(self, user_id, token):
+    def __init__(self, user_id, token, expires_at):
         self.user_id = user_id
         self.token = token
+        self.expires_at = expires_at
 
     def __str__(self):
         return f"Token for User ID {self.user_id}"

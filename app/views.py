@@ -4,6 +4,8 @@ from .models import *
 from . import db
 from flask_admin.helpers import get_url
 from markupsafe import Markup
+from app.utils.telegram_notify import send_telegram_message
+from flask import request, redirect, flash
 
 
 class AdminOnlyView(ModelView):
@@ -62,14 +64,29 @@ class MedicView(ModelView):
         'file_download': 'Файл'
     }
 
-    form_excluded_columns = ('file_data', 'user')  # исключаем user
-    form_columns = ('user_id', 'reason', 'status', 'date')  # только ID
+    form_columns = ('status',)  # Разрешаем редактировать только статус
 
     def is_accessible(self):
         return current_user.is_authenticated and current_user.role in ['medic', 'admin']
 
     def inaccessible_callback(self, name, **kwargs):
         return "⛔ Доступ запрещён", 403
+
+    def after_model_change(self, form, model, is_created):
+        # Получаем старое значение из базы
+        db.session.expire_all()  # сбрасываем кэш SQLAlchemy
+        latest = MedicalRequest.query.get(model.id)
+
+        if latest:
+            formatted_date = latest.date.strftime('%Y-%m-%d %H:%M')
+            message = (
+                f"📄 <b>Обновление по вашей заявке</b>\n"
+                f"🆔 Заявка №{latest.id}\n"
+                f"📅 Дата подачи: {formatted_date}\n"
+                f"📝 Причина: {latest.reason}\n"
+                f"📌 <b>Новый статус:</b> {latest.status}"
+            )
+            send_telegram_message(latest.user_id, message)
 
 
 def setup_admin_views(admin):

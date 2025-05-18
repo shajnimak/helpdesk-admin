@@ -4,6 +4,7 @@ from flask import Flask, request
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import UserToken
 from app.utils.database import AsyncSessionLocal
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
@@ -34,7 +35,8 @@ async def get_access_token(code, state):
 
 # Сохранение токена в базу данных PostgreSQL
 async def save_token_to_db(session: AsyncSession, user_id: str, access_token: str):
-    token = UserToken(user_id=user_id, token=access_token)  # Убедитесь, что 'token' — это правильное имя поля в модели
+    expires_at = datetime.utcnow() + timedelta(hours=1)
+    token = UserToken(user_id=user_id, token=access_token, expires_at=expires_at)  # Убедитесь, что 'token' — это правильное имя поля в модели
     session.add(token)
     await session.commit()
 
