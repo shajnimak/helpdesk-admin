@@ -1,17 +1,80 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Вход</title>
+    <style>
+        body {
+            background: #f0f2f5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            width: 320px;
+        }
+        h2 {
+            margin-bottom: 24px;
+            color: #333;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 20px;
+            border: 1.5px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #0066cc;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #0066cc;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #004a99;
+        }
+    </style>
 </head>
 <body>
-    <h2>Вход в систему</h2>
-    <form method="post">
-        <label>Email:</label>
-        <input type="text" name="email"><br>
-        <label>Пароль:</label>
-        <input type="password" name="password"><br>
-        <button type="submit">Войти</button>
-    </form>
+    <div class="login-container">
+        <h2>Вход в систему</h2>
+        <form method="post">
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" required />
+
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required />
+
+            <button type="submit">Войти</button>
+        </form>
+    </div>
 </body>
 </html>

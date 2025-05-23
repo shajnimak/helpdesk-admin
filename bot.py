@@ -352,26 +352,26 @@ async def prepare_reply(callback: CallbackQuery):
     reply_draft[user_id] = {"msg_id": full_id, "to_email": sender_email}
     await callback.message.answer(f"✉️ Введите ваш ответ для {sender_email}:")
 
-@router.message()
-async def handle_reply_body(message: types.Message):
-    user_id = str(message.from_user.id)
-    if user_id not in reply_draft:
-        return
-
-    reply_info = reply_draft[user_id]
-    reply_body = message.text
-    to_email = reply_info["to_email"]
-
-    success = await send_email(user_id, to_email, reply_body)
-
-    if success:
-        await message.answer(f"✅ Ответ отправлен на {to_email}.")
-    else:
-        await message.answer("❌ Ошибка при отправке.")
-
-    # Здесь можно отправить Telegram уведомление студенту,
-    # если email-to-TG mapping хранится
-    del reply_draft[user_id]
+# @router.message()
+# async def handle_reply_body(message: types.Message):
+#     user_id = str(message.from_user.id)
+#     if user_id not in reply_draft:
+#         return
+#
+#     reply_info = reply_draft[user_id]
+#     reply_body = message.text
+#     to_email = reply_info["to_email"]
+#
+#     success = await send_email(user_id, to_email, reply_body)
+#
+#     if success:
+#         await message.answer(f"✅ Ответ отправлен на {to_email}.")
+#     else:
+#         await message.answer("❌ Ошибка при отправке.")
+#
+#     # Здесь можно отправить Telegram уведомление студенту,
+#     # если email-to-TG mapping хранится
+#     del reply_draft[user_id]
 
 
 @router.message(Command("idcard"))
@@ -388,55 +388,55 @@ async def start_id_card_request(message: types.Message):
     await message.answer("🪪 Пожалуйста, введите сообщение по ID-карте (например, потеря, запрос на замену и т.д.):")
 
 
-@router.message()
-async def handle_user_message(message: types.Message):
-    user_id = str(message.from_user.id)
-
-    # Обработка сообщения для техподдержки
-    if user_id in support_draft:
-        message_body = message.text
-        success = await send_support_email(user_id, message_body)
-
-        if success:
-            await message.answer("✅ Ваше сообщение успешно отправлено в техподдержку!")
-        else:
-            await message.answer("❌ Не удалось отправить сообщение. Попробуйте позже.")
-
-        del support_draft[user_id]
-        return
-
-    # Обработка сообщения по ID-карте
-    if user_id in id_card_draft:
-        message_body = message.text
-        recipient = "m.m.shdmn@gmail.com"
-        success = await send_email(user_id, recipient, message_body)
-
-        if success:
-            await message.answer("✅ Ваше сообщение об ID-карте успешно отправлено в соответствующий отдел!")
-        else:
-            await message.answer("❌ Не удалось отправить сообщение. Попробуйте позже.")
-
-        del id_card_draft[user_id]
-        return
-
-    # Обработка черновика обычного письма
-    if user_id in email_draft and "recipient" not in email_draft[user_id]:
-        email_draft[user_id]["recipient"] = message.text
-        await message.answer("Теперь введите текст письма:")
-
-    elif user_id in email_draft and "recipient" in email_draft[user_id]:
-        email_draft[user_id]["message"] = message.text
-        recipient = email_draft[user_id]["recipient"]
-        email_body = email_draft[user_id]["message"]
-
-        success = await send_email(user_id, recipient, email_body)
-
-        if success:
-            await message.answer(f"Письмо отправлено на {recipient}!")
-        else:
-            await message.answer("Ошибка при отправке письма. Попробуйте позже.")
-
-        del email_draft[user_id]
+# @router.message()
+# async def handle_user_message(message: types.Message):
+#     user_id = str(message.from_user.id)
+#
+#     # Обработка сообщения для техподдержки
+#     if user_id in support_draft:
+#         message_body = message.text
+#         success = await send_support_email(user_id, message_body)
+#
+#         if success:
+#             await message.answer("✅ Ваше сообщение успешно отправлено в техподдержку!")
+#         else:
+#             await message.answer("❌ Не удалось отправить сообщение. Попробуйте позже.")
+#
+#         del support_draft[user_id]
+#         return
+#
+#     # Обработка сообщения по ID-карте
+#     if user_id in id_card_draft:
+#         message_body = message.text
+#         recipient = "m.m.shdmn@gmail.com"
+#         success = await send_email(user_id, recipient, message_body)
+#
+#         if success:
+#             await message.answer("✅ Ваше сообщение об ID-карте успешно отправлено в соответствующий отдел!")
+#         else:
+#             await message.answer("❌ Не удалось отправить сообщение. Попробуйте позже.")
+#
+#         del id_card_draft[user_id]
+#         return
+#
+#     # Обработка черновика обычного письма
+#     if user_id in email_draft and "recipient" not in email_draft[user_id]:
+#         email_draft[user_id]["recipient"] = message.text
+#         await message.answer("Теперь введите текст письма:")
+#
+#     elif user_id in email_draft and "recipient" in email_draft[user_id]:
+#         email_draft[user_id]["message"] = message.text
+#         recipient = email_draft[user_id]["recipient"]
+#         email_body = email_draft[user_id]["message"]
+#
+#         success = await send_email(user_id, recipient, email_body)
+#
+#         if success:
+#             await message.answer(f"Письмо отправлено на {recipient}!")
+#         else:
+#             await message.answer("Ошибка при отправке письма. Попробуйте позже.")
+#
+#         del email_draft[user_id]
 
 @router.message(Command("medfile"))
 async def upload_medical_file_start(message: types.Message):
@@ -503,39 +503,39 @@ async def start_medical_request(message: types.Message):
     medical_draft[user_id] = {}
     await message.answer("📝 Введите причину обращения в медпункт:")
 
-@router.message()
-async def collect_medical_info(message: types.Message):
-    user_id = str(message.from_user.id)
-
-    # Шаг 1: причина
-    if user_id in medical_draft and "reason" not in medical_draft[user_id]:
-        medical_draft[user_id]["reason"] = message.text
-        await message.answer("📅 Введите дату и время записи в формате YYYY-MM-DD HH:MM")
-        return
-
-    # Шаг 2: дата и отправка
-    if user_id in medical_draft and "reason" in medical_draft[user_id] and "datetime" not in medical_draft[user_id]:
-        try:
-            from datetime import datetime
-            date = datetime.strptime(message.text.strip(), "%Y-%m-%d %H:%M")
-            medical_draft[user_id]["datetime"] = date.isoformat()
-
-            # Отправка запроса на Flask API
-            data = {
-                "user_id": int(user_id),
-                "reason": medical_draft[user_id]["reason"],
-                "date": medical_draft[user_id]["datetime"]
-            }
-
-            res = requests.post("http://localhost:5001/api/medical_requests", json=data)
-            if res.status_code == 201:
-                await message.answer("✅ Ваша заявка в медпункт успешно отправлена. Ожидайте подтверждения.")
-            else:
-                await message.answer("❌ Ошибка при создании заявки. Попробуйте позже.")
-        except ValueError:
-            await message.answer("❗ Неверный формат. Попробуйте ещё раз (например: 2025-05-18 14:30)")
-        finally:
-            del medical_draft[user_id]
+# @router.message()
+# async def collect_medical_info(message: types.Message):
+#     user_id = str(message.from_user.id)
+#
+#     # Шаг 1: причина
+#     if user_id in medical_draft and "reason" not in medical_draft[user_id]:
+#         medical_draft[user_id]["reason"] = message.text
+#         await message.answer("📅 Введите дату и время записи в формате YYYY-MM-DD HH:MM")
+#         return
+#
+#     # Шаг 2: дата и отправка
+#     if user_id in medical_draft and "reason" in medical_draft[user_id] and "datetime" not in medical_draft[user_id]:
+#         try:
+#             from datetime import datetime
+#             date = datetime.strptime(message.text.strip(), "%Y-%m-%d %H:%M")
+#             medical_draft[user_id]["datetime"] = date.isoformat()
+#
+#             # Отправка запроса на Flask API
+#             data = {
+#                 "user_id": int(user_id),
+#                 "reason": medical_draft[user_id]["reason"],
+#                 "date": medical_draft[user_id]["datetime"]
+#             }
+#
+#             res = requests.post("http://localhost:5001/api/medical_requests", json=data)
+#             if res.status_code == 201:
+#                 await message.answer("✅ Ваша заявка в медпункт успешно отправлена. Ожидайте подтверждения.")
+#             else:
+#                 await message.answer("❌ Ошибка при создании заявки. Попробуйте позже.")
+#         except ValueError:
+#             await message.answer("❗ Неверный формат. Попробуйте ещё раз (например: 2025-05-18 14:30)")
+#         finally:
+#             del medical_draft[user_id]
 
 @router.message(Command("support"))
 async def ask_support_message(message: types.Message):
@@ -550,41 +550,41 @@ async def ask_support_message(message: types.Message):
     support_draft[user_id] = {}
     await message.answer("✍️ Пожалуйста, введите ваше сообщение для технической поддержки:")
 
-@router.message()
-async def handle_support_message(message: types.Message):
-    user_id = str(message.from_user.id)
-
-    # Если ожидается сообщение для техподдержки
-    if user_id in support_draft:
-        message_body = message.text
-        success = await send_support_email(user_id, message_body)
-
-        if success:
-            await message.answer("✅ Ваше сообщение успешно отправлено в техподдержку!")
-        else:
-            await message.answer("❌ Не удалось отправить сообщение. Попробуйте позже.")
-
-        del support_draft[user_id]
-        return
-
-    # Оставим это как есть для черновика email
-    if user_id in email_draft and "recipient" not in email_draft[user_id]:
-        email_draft[user_id]["recipient"] = message.text
-        await message.answer("Теперь введите текст письма:")
-
-    elif user_id in email_draft and "recipient" in email_draft[user_id]:
-        email_draft[user_id]["message"] = message.text
-        recipient = email_draft[user_id]["recipient"]
-        email_body = email_draft[user_id]["message"]
-
-        success = await send_email(user_id, recipient, email_body)
-
-        if success:
-            await message.answer(f"Письмо отправлено на {recipient}!")
-        else:
-            await message.answer("Ошибка при отправке письма. Попробуйте позже.")
-
-        del email_draft[user_id]
+# @router.message()
+# async def handle_support_message(message: types.Message):
+#     user_id = str(message.from_user.id)
+#
+#     # Если ожидается сообщение для техподдержки
+#     if user_id in support_draft:
+#         message_body = message.text
+#         success = await send_support_email(user_id, message_body)
+#
+#         if success:
+#             await message.answer("✅ Ваше сообщение успешно отправлено в техподдержку!")
+#         else:
+#             await message.answer("❌ Не удалось отправить сообщение. Попробуйте позже.")
+#
+#         del support_draft[user_id]
+#         return
+#
+#     # Оставим это как есть для черновика email
+#     if user_id in email_draft and "recipient" not in email_draft[user_id]:
+#         email_draft[user_id]["recipient"] = message.text
+#         await message.answer("Теперь введите текст письма:")
+#
+#     elif user_id in email_draft and "recipient" in email_draft[user_id]:
+#         email_draft[user_id]["message"] = message.text
+#         recipient = email_draft[user_id]["recipient"]
+#         email_body = email_draft[user_id]["message"]
+#
+#         success = await send_email(user_id, recipient, email_body)
+#
+#         if success:
+#             await message.answer(f"Письмо отправлено на {recipient}!")
+#         else:
+#             await message.answer("Ошибка при отправке письма. Попробуйте позже.")
+#
+#         del email_draft[user_id]
 
 async def send_support_email(user_id, email_body):
     async with AsyncSessionLocal() as session:
@@ -629,15 +629,83 @@ async def ask_recipient(message: types.Message):
     email_draft[user_id] = {}
     await message.answer("Введите email получателя:")
 
+# @router.message()
+# async def ask_email_body(message: types.Message):
+#     user_id = str(message.from_user.id)
+#
+#     if user_id in email_draft and "recipient" not in email_draft[user_id]:
+#         email_draft[user_id]["recipient"] = message.text
+#         await message.answer("Теперь введите текст письма:")
+#
+#     elif user_id in email_draft and "recipient" in email_draft[user_id]:
+#         email_draft[user_id]["message"] = message.text
+#         recipient = email_draft[user_id]["recipient"]
+#         email_body = email_draft[user_id]["message"]
+#
+#         success = await send_email(user_id, recipient, email_body)
+#
+#         if success:
+#             await message.answer(f"Письмо отправлено на {recipient}!")
+#         else:
+#             await message.answer("Ошибка при отправке письма. Попробуйте позже.")
+#
+#         del email_draft[user_id]
+
 @router.message()
-async def ask_email_body(message: types.Message):
+async def general_message_handler(message: types.Message):
     user_id = str(message.from_user.id)
 
+    # 1. Сообщение для техподдержки
+    if user_id in support_draft:
+        message_body = message.text
+        success = await send_support_email(user_id, message_body)
+
+        if success:
+            await message.answer("✅ Ваше сообщение успешно отправлено в техподдержку!")
+        else:
+            await message.answer("❌ Не удалось отправить сообщение. Попробуйте позже.")
+
+        del support_draft[user_id]
+        return
+
+    # 2. Сообщение по ID-карте
+    if user_id in id_card_draft:
+        message_body = message.text
+        recipient = "m.m.shdmn@gmail.com"
+        success = await send_email(user_id, recipient, message_body)
+
+        if success:
+            await message.answer("✅ Ваше сообщение об ID-карте успешно отправлено в соответствующий отдел!")
+        else:
+            await message.answer("❌ Не удалось отправить сообщение. Попробуйте позже.")
+
+        del id_card_draft[user_id]
+        return
+
+    # 3. Ответ на письмо (reply)
+    if user_id in reply_draft:
+        reply_info = reply_draft[user_id]
+        reply_body = message.text
+        to_email = reply_info["to_email"]
+
+        success = await send_email(user_id, to_email, reply_body)
+
+        if success:
+            await message.answer(f"✅ Ответ отправлен на {to_email}.")
+        else:
+            await message.answer("❌ Ошибка при отправке.")
+
+        del reply_draft[user_id]
+        return
+
+    # 4. Черновик email — ввод email получателя (если ещё не введён)
     if user_id in email_draft and "recipient" not in email_draft[user_id]:
         email_draft[user_id]["recipient"] = message.text
         await message.answer("Теперь введите текст письма:")
+        return
 
-    elif user_id in email_draft and "recipient" in email_draft[user_id]:
+    # 5. Черновик email — ввод текста письма (если email получателя уже есть)
+    if user_id in email_draft and "recipient" in email_draft[user_id]:
         email_draft[user_id]["message"] = message.text
         recipient = email_draft[user_id]["recipient"]
         email_body = email_draft[user_id]["message"]
@@ -650,6 +718,40 @@ async def ask_email_body(message: types.Message):
             await message.answer("Ошибка при отправке письма. Попробуйте позже.")
 
         del email_draft[user_id]
+        return
+
+    # 6. Обработка медицинской заявки (medical_draft) **
+    if user_id in medical_draft:
+        if "reason" not in medical_draft[user_id]:
+            medical_draft[user_id]["reason"] = message.text
+            await message.answer("📅 Введите дату и время записи в формате YYYY-MM-DD HH:MM")
+            return
+
+        if "reason" in medical_draft[user_id] and "datetime" not in medical_draft[user_id]:
+            try:
+                from datetime import datetime
+                date = datetime.strptime(message.text.strip(), "%Y-%m-%d %H:%M")
+                medical_draft[user_id]["datetime"] = date.isoformat()
+
+                data = {
+                    "user_id": int(user_id),
+                    "reason": medical_draft[user_id]["reason"],
+                    "date": medical_draft[user_id]["datetime"]
+                }
+
+                res = requests.post("http://localhost:5001/api/medical_requests", json=data)
+                if res.status_code == 201:
+                    await message.answer("✅ Ваша заявка в медпункт успешно отправлена. Ожидайте подтверждения.")
+                else:
+                    await message.answer("❌ Ошибка при создании заявки. Попробуйте позже.")
+            except ValueError:
+                await message.answer("❗ Неверный формат. Попробуйте ещё раз (например: 2025-05-18 14:30)")
+                return  # ждем правильный ввод
+            finally:
+                del medical_draft[user_id]
+            return
+    # Если ни одно условие не сработало — игнорируем или можно добавить общий ответ
+
 
 # Async версия отправки email
 async def send_email(user_id, recipient, email_body):
