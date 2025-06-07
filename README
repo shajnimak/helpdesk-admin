@@ -1,0 +1,33 @@
+Первый запуск:
+Если активный venv в терминале;
+deactivate
+python -m venv .venv
+.\.venv\Scripts\activate
+
+Дальше, скачиваем все библиотеки:
+pip install -r requirements.txt
+Что бы создать таблицы в бд
+flask db init
+flask db migrate -m "comment"
+flask db upgrade
+
+ТО ЧТО СВЕРХУ ПРИ ПЕРВОМ ЗАПУСКЕ. ПОСЛЕ НЕ ИСПОЛЬЗУЕМ
+
+
+ЕСЛИ есть изменения по моделям(таблицы) :
+flask db migrate -m "comment"
+flask db upgrade
+
+
+ЗАПУСК:
+1 - БЭК и АДМИН
+python run.py
+2 - СЕРВЕР
+ОТКРЫВАЕМ ВТОРОЙ ТЕРМИНАЛ
+python .\server.py
+3 - БОТ
+ОТКРЫВАЕМ ЕЩЕ ОДИН ТЕРМИНАЛ
+python .\bot.py
+
+ТЕСТЫ
+python .\test\test_api.py
