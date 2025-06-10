@@ -34,11 +34,12 @@ async def get_access_token(code, state):
                 return None
 
 # Сохранение токена в базу данных PostgreSQL
-async def save_token_to_db(session: AsyncSession, user_id: str, access_token: str):
+async def save_token_to_db(user_id: str, access_token: str):
     expires_at = datetime.utcnow() + timedelta(hours=1)
-    token = UserToken(user_id=user_id, token=access_token, expires_at=expires_at)  # Убедитесь, что 'token' — это правильное имя поля в модели
-    session.add(token)
-    await session.commit()
+    async with AsyncSessionLocal() as session:
+        async with session.begin():  # безопасная транзакция
+            token = UserToken(user_id=user_id, token=access_token, expires_at=expires_at)
+            session.add(token)
 
 # Маршрут callback
 @app.route('/callback')
@@ -49,7 +50,6 @@ async def callback():
     if not code or not state:
         return "Ошибка: отсутствует код или ID пользователя", 400
 
-    # Асинхронный запрос к API для получения токена
     token_data = {
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
@@ -64,13 +64,12 @@ async def callback():
                 result = await response.json()
                 access_token = result.get("access_token")
 
-                # Сохраняем токен в базу данных
-                async with AsyncSessionLocal() as db_session:
-                    await save_token_to_db(db_session, state, access_token)
+                # 🔐 Безопасное сохранение токена
+                await save_token_to_db(state, access_token)
 
                 return "Авторизация успешна! Теперь можете использовать /inbox."
             else:
-                return f"Ошибка при авторизации: {response.text}", 400
+                return f"Ошибка при авторизации: {await response.text()}", 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
