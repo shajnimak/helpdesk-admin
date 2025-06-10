@@ -12,7 +12,7 @@ app = Flask(__name__)
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 TENANT_ID = os.getenv("TENANT_ID")
-REDIRECT_URI = "https://helpdesk-admin-r0n0.onrender.com/callback"
+REDIRECT_URI = "http://localhost:5000/callback"
 
 # Асинхронная функция для получения токена
 async def get_access_token(code, state):

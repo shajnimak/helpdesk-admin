@@ -22,7 +22,7 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 TENANT_ID = os.getenv("TENANT_ID")
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-REDIRECT_URI = "https://helpdesk-admin-r0n0.onrender.com/callback"
+REDIRECT_URI = "http://localhost:5000/callback"
 
 bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
