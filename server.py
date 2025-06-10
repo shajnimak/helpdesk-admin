@@ -1,13 +1,13 @@
 import os
 import aiohttp
 import asyncio
-from flask import Flask, request
+from quart import Quart, request
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import UserToken
 from app.utils.database import AsyncSessionLocal
 from datetime import datetime, timedelta
 
-app = Flask(__name__)
+app = Quart(__name__)
 
 # Конфигурация OAuth
 CLIENT_ID = os.getenv("CLIENT_ID")
@@ -43,14 +43,8 @@ async def save_token_to_db(user_id: str, access_token: str):
             session.add(token)  # Добавляем токен в сессию
             await session.commit()  # Коммитим изменения
 
-# Синхронный маршрут Flask для callback
 @app.route('/callback')
-def callback():
-    # Мы используем asyncio.run, чтобы гарантировать выполнение асинхронных задач в синхронном контексте Flask
-    return asyncio.run(handle_callback())
-
-# Асинхронная функция для обработки callback
-async def handle_callback():
+async def callback():
     code = request.args.get('code')
     state = request.args.get('state')  # Telegram user ID
 
