@@ -22,7 +22,7 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 TENANT_ID = os.getenv("TENANT_ID")
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-REDIRECT_URI = "http://localhost:5000/callback"
+REDIRECT_URI = "https://helpdesk-admin-r0n0.onrender.com/callback"
 
 bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
@@ -606,7 +606,7 @@ async def send_support_email(user_id, email_body):
                 "content": email_body
             },
             "toRecipients": [
-                {"emailAddress": {"address": "m.m.shdmn@gmail.com"}}
+                {"emailAddress": {"address": "akzhanimanbazarova@gmail.com"}}
             ]
         },
         "saveToSentItems": "true"
@@ -671,7 +671,7 @@ async def general_message_handler(message: types.Message):
     # 2. Сообщение по ID-карте
     if user_id in id_card_draft:
         message_body = message.text
-        recipient = "m.m.shdmn@gmail.com"
+        recipient = "akzhanimanbazarova@gmail.com"
         success = await send_email(user_id, recipient, message_body)
 
         if success:
